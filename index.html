@@ -1,0 +1,58 @@
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+  <input type="text" id="text">
+  <input type="button" value="Search" id="search">
+  <script>
+    $(document).ready(function() {
+      $('#search').click(function(e) {
+        var url = 'https://api.mercadolibre.com/sites/MCO/search?q=';
+        url = url + $('#text').val()
+        $.getJSON(url, function( data ) {
+          console.log(data);
+        $.each(data.results, function( key, val ) {
+          url1 = 'https://api.mercadolibre.com/items/' + val.id;
+
+          $.getJSON(url1, function(result) {
+            if (result.geolocation.latitude && result.geolocation.longitude) {
+              console.log(result);
+              var myLatLng = {lat: result.geolocation.latitude, lng: result.geolocation.longitude};
+
+              var marker = new google.maps.Marker({
+                position: myLatLng,
+                map: map,
+                title: result.title
+              });
+            }
+          });
+        });
+        });
+      });
+    });
+  </script>
+  <div id="map"></div>
+    <script>
+      var map;
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 4.6529033, lng: -74.1292759},
+          zoom: 6
+        });
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDWtJA_QRF8UeF2hRpi82pBpFL_f1pD-QE&callback=initMap"
+    async defer></script>
+  </body>
+</html>
